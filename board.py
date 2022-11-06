@@ -6,13 +6,17 @@ class TicTacToeBoard:
 
     def __init__(self):
         self.board = []
+        self.board_size = 3
 
     def create_board(self):
-        for i in range(3):
+        for i in range(self.board_size):
             row = []
-            for j in range(3):
+            for j in range(self.board_size):
                 row.append("-")
             self.board.append(row)
+
+    def validate(self):
+        pass
 
     def insert_move(self, identifier: str, row: int, column: int):
         if 0 >= row or row > len(self.board):
@@ -29,7 +33,7 @@ class TicTacToeBoard:
         is_winner = self.check_for_win_move(identifier, row, column)
 
         if is_winner:
-            print("Hurrey..!!, you won it")
+            print("Congrats..!!, you won it")
 
         self.display_board()
 
@@ -39,7 +43,7 @@ class TicTacToeBoard:
             print(" ".join(i))
 
     def check_for_win_move(self, identifier: str, row: int, column: int) -> bool:
-        row_positions, column_positions = self.get_win_positions(row, column)
+        row_positions, column_positions, diagonal_positions = self.get_win_positions(row, column)
         row_values = [self.board[position[0]][position[1]] for position in row_positions if
                       identifier == self.board[position[0]][position[1]]]
         if len(self.board) == len(row_values):
@@ -50,18 +54,24 @@ class TicTacToeBoard:
         if len(self.board) == len(column_values):
             return True
 
-        diagonal_values = []
+        diagonal_values = [self.board[position[0]][position[1]] for position in diagonal_positions if
+                           identifier == self.board[position[0]][position[1]]]
+        if len(self.board) == len(diagonal_values):
+            return True
 
         return False
 
-    def get_win_positions(self, row: int, column: int) -> tuple[list, list]:
+    def get_win_positions(self, row: int, column: int) -> tuple[list, list, list]:
         row_positions = []
         col_positions = []
+        diagonal_positions, diagonal_max_reach = [], len(self.board) - 1
         row, column = TicTacToeBoard.format_input_to_list_index(row, column)
         for i, v in enumerate(self.board):
             row_positions.append([row, i])
             col_positions.append([i, column])
-        return row_positions, col_positions
+            diagonal_positions.append([i, i])
+        print(diagonal_positions)
+        return row_positions, col_positions, diagonal_positions
 
     @staticmethod
     def format_input_to_list_index(row, column):
@@ -71,12 +81,11 @@ class TicTacToeBoard:
 try:
     board = TicTacToeBoard()
     board.create_board()
+    # board.get_win_positions(2, 2)
     board.insert_move("X", 1, 1)
-    board.insert_move("X", 2, 1)
-    board.insert_move("X", 3, 1)
+    board.insert_move("X", 3, 3)
+    board.insert_move("X", 2, 2)
 
-    board.insert_move("O", 1, 2)
-    # board.display_board()
 except (Exception, MemoryError) as e:
     print(e)
     traceback.print_exc()
