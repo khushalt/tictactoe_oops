@@ -7,6 +7,7 @@ class TicTacToeBoard:
     def __init__(self):
         self.board = []
         self.board_size = 3
+        self.last_move = None
 
     def create_board(self):
         for i in range(self.board_size):
@@ -28,7 +29,11 @@ class TicTacToeBoard:
         elif self.board[row - 1][column - 1] != "-":
             raise AlreadyExistException("Cell is already occupied, please use another move")
 
+        if self.last_move and self.last_move == identifier:
+            raise ValidationError(f"Not allowed for {identifier}, wait for your move")
+
         self.board[row - 1][column - 1] = identifier
+        self.get_last_move(identifier)
 
         is_winner = self.check_for_win_move(identifier, row, column)
 
@@ -70,21 +75,24 @@ class TicTacToeBoard:
             row_positions.append([row, i])
             col_positions.append([i, column])
             diagonal_positions.append([i, i])
-        print(diagonal_positions)
         return row_positions, col_positions, diagonal_positions
 
     @staticmethod
     def format_input_to_list_index(row, column):
         return row - 1, column - 1
 
+    def get_last_move(self, last_move):
+        self.last_move = last_move
+        return self.last_move
+
 
 try:
     board = TicTacToeBoard()
     board.create_board()
     # board.get_win_positions(2, 2)
-    board.insert_move("X", 1, 1)
+    board.insert_move("o", 1, 1)
     board.insert_move("X", 3, 3)
-    board.insert_move("X", 2, 2)
+    board.insert_move("o", 2, 2)
 
 except (Exception, MemoryError) as e:
     print(e)
